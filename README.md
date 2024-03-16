@@ -1,2 +1,2 @@
 # codsoft
-This repository is for Codsoft internship tasks for python programminfg.
+This repository is for Codsoft internship tasks for python programming.
