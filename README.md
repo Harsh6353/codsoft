@@ -1,2 +1,2 @@
 # codsoft
-This repository is for Codsoft internship tasks
+This repository is for Codsoft internship tasks.
