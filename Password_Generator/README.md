@@ -1,4 +1,3 @@
-README_CONTENT = """\
 # Random Password Generator
 
 This is a simple password generator GUI application built using Python's tkinter library. It allows users to generate random passwords of varying lengths and store them along with their names in a JSON file.
