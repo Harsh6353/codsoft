@@ -21,6 +21,7 @@ This is a simple password generator GUI application built using Python's tkinter
     python password_generator.py
 
 ## Usage
+
 - Enter your name in the input field.
 - Enter the desired length for the password.
 - Click on the "Generate Strong Password" button to generate a password.
