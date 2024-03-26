@@ -13,7 +13,7 @@ This is a simple password generator GUI application built using Python's tkinter
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your_username/password-generator.git
+   git clone https://github.com/Harsh6353/codsoft/tree/main/Password_Generator
 
 2. Run the application:
 

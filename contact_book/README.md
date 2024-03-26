@@ -14,7 +14,7 @@ A simple GUI-based contact book application built using Tkinter in Python. Users
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/your-username/contact-book.git
+    git clone https://github.com/Harsh6353/codsoft/tree/main/contact_book
 
 2. Install Tkinter module:
 
