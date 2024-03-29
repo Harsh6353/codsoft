@@ -1,107 +1,92 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
-from ttkbootstrap import Style
+from tkinter import messagebox
 import json
+import csv
 
-class TodoListApp(tk.Tk):
-    def __init__(self):
-        super().__init__()
-
-        self.title("Todo List App")
-        self.geometry("400x500")
-        style = Style(theme="flatly")
-        style.configure("Custon.TEntry", foreground="gray")
-
-        # Create input field for adding tasks
-        self.task_input = ttk.Entry(self, font=(
-            "TkDefaultFont", 16), width=30, style="Custon.TEntry")
-        self.task_input.pack(pady=10)
-
-        # Set placeholder for input field
-        self.task_input.insert(0, "Enter your todo here...")
-
-        # Bind event to clear placeholder when input field is clicked
-        self.task_input.bind("<FocusIn>", self.clear_placeholder)
-        # Bind event to restore placeholder when input field loses focus
-        self.task_input.bind("<FocusOut>", self.restore_placeholder)
-
-        # Create button for adding tasks
-        ttk.Button(self, text="Add", command=self.add_task).pack(pady=5)
-
-        # Create listbox to display added tasks
-        self.task_list = tk.Listbox(self, font=(
-            "TkDefaultFont", 16), height=10, selectmode=tk.NONE)
-        self.task_list.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-
-        # Create buttons for marking tasks as done or deleting them
-        ttk.Button(self, text="Done", style="success.TButton",
-        command=self.mark_done).pack(side=tk.LEFT, padx=10, pady=10)
-        ttk.Button(self, text="Delete", style="danger.TButton",
-        command=self.delete_task).pack(side=tk.RIGHT, padx=10, pady=10)
+class ToDoListApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("To-Do List App")
         
-        # Create buttton for displaying task statistics
-        ttk.Button(self, text="View Stats", style="info.TButton",
-        command=self.view_stats).pack(side=tk.BOTTOM, pady=10)
+        self.tasks = []
         
+        # Task Entry
+        self.task_entry = tk.Entry(root, width=30)
+        self.task_entry.pack(pady=20)
+        
+        # Add Task Button
+        self.add_task_btn = tk.Button(root, text="Add Task", command=self.add_task)
+        self.add_task_btn.pack(pady=10)
+        
+        # Task List
+        self.task_list = tk.Listbox(root, height=10, width=50, border=0)
+        self.task_list.pack(padx=20, pady=10)
+        
+        # Delete Task Button
+        self.delete_task_btn = tk.Button(root, text="Delete Task", command=self.delete_task)
+        self.delete_task_btn.pack(pady=10)
+        
+        # Mark Task Button
+        self.mark_task_btn = tk.Button(root, text="Mark as Completed", command=self.mark_task)
+        self.mark_task_btn.pack(pady=10)
+        
+        
+        # Save Button
+        self.save_btn = tk.Button(root, text="Save Tasks", command=self.save_tasks)
+        self.save_btn.pack(pady=10)
+        
+        # Load Button
+        self.load_btn = tk.Button(root, text="Load Tasks", command=self.load_tasks)
+        self.load_btn.pack(pady=10)
+        
+        # Populate task list
         self.load_tasks()
     
-    def view_stats(self):
-        done_count = 0
-        total_count = self.task_list.size()
-        for i in range(total_count):
-            if self.task_list.itemcget(i, "fg") == "green":
-                done_count += 1
-        messagebox.showinfo("Task Statistics", f"Total tasks: {total_count}\nCompleted tasks: {done_count}")
-
     def add_task(self):
-        task = self.task_input.get()
-        if task != "Enter your todo here...":
-            self.task_list.insert(tk.END, task)
-            self.task_list.itemconfig(tk.END, fg="orange")
-            self.task_input.delete(0, tk.END)
-            self.save_tasks()
-
-    def mark_done(self):
-        task_index = self.task_list.curselection()
-        if task_index:
-            self.task_list.itemconfig(task_index, fg="green")
-            self.save_tasks()
+        task = self.task_entry.get()
+        if task:
+            self.tasks.append({"task": task, "completed": False})
+            self.update_task_list()
+            self.task_entry.delete(0, tk.END)
+        else:
+            messagebox.showwarning("Warning", "Please enter a task.")
     
     def delete_task(self):
-        task_index = self.task_list.curselection()
-        if task_index:
-            self.task_list.delete(task_index)
-            self.save_tasks()
+        try:
+            index = self.task_list.curselection()[0]
+            del self.tasks[index]
+            self.update_task_list()
+        except IndexError:
+            messagebox.showwarning("Warning", "Please select a task to delete.")
     
-    def clear_placeholder(self, event):
-        if self.task_input.get() == "Enter your todo here...":
-            self.task_input.delete(0, tk.END)
-            self.task_input.configure(style="TEntry")
+    def mark_task(self):
+        try:
+            index = self.task_list.curselection()[0]
+            self.tasks[index]["completed"] = True
+            self.update_task_list()
+        except IndexError:
+            messagebox.showwarning("Warning", "Please select a task to mark as completed.")
+    
 
-    def restore_placeholder(self, event):
-        if self.task_input.get() == "":
-            self.task_input.insert(0, "Enter your todo here...")
-            self.task_input.configure(style="Custom.TEntry")
-
+    def save_tasks(self):
+        with open("C:/codsoft/codsoft/To_Do_List/tasks.json", "w") as file:
+            json.dump(self.tasks, file)
+    
     def load_tasks(self):
         try:
-            with open("codsoft/To_Do_List/tasks.json", "r") as f:
-                data = json.load(f)
-                for task in data:
-                    self.task_list.insert(tk.END, task["text"])
-                    self.task_list.itemconfig(tk.END, fg=task["color"])
+            with open("C:/codsoft/codsoft/To_Do_List/tasks.json", "r") as file:
+                self.tasks = json.load(file)
+                self.update_task_list()
         except FileNotFoundError:
-            pass
+            pass  # File does not exist yet, so just continue without loading
     
-    def save_tasks(self):
-        data = []
-        for i in range(self.task_list.size()):
-            text = self.task_list.get(i)
-            color = self.task_list.itemcget(i, "fg")
-            data.append({"text": text, "color": color})
-        with open("codsoft/To_Do_List/tasks.json", "w") as f:
-            json.dump(data, f)
+    def update_task_list(self):
+        self.task_list.delete(0, tk.END)
+        for task in self.tasks:
+            status = "[✔]" if task["completed"] else "[ ]"
+            self.task_list.insert(tk.END, f"{status} {task['task']}")
 
-if __name__ == '__main__':
-    app = TodoListApp()
-    app.mainloop()
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ToDoListApp(root)
+    root.mainloop()
