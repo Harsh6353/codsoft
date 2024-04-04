@@ -86,7 +86,7 @@ class ToDoListApp:
             status = "[✔]" if task["completed"] else "[ ]"
             self.task_list.insert(tk.END, f"{status} {task['task']}")
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = ToDoListApp(root)
-    root.mainloop()
+
+root = tk.Tk()
+app = ToDoListApp(root)
+root.mainloop()
